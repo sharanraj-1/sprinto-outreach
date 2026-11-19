@@ -46,7 +46,7 @@ class SendReq(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def page():
-    return (ROOT / "web" / "index.html").read_text()
+    return (ROOT / "web" / "index.html").read_text(encoding="utf-8")
 
 
 @app.post("/api/run")

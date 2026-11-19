@@ -5,304 +5,357 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sprinto Outreach</title>
 <meta name="description" content="Paste a domain. The pipeline checks fit for Sprinto, finds the decision-maker and drafts a cold email you review before anything is sent.">
-<meta name="theme-color" content="#f5f7f7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0d1211" media="(prefers-color-scheme: dark)">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#2d4bff">
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <style>
-  /* Design read: single-page review tool for a sales reviewer, B2B, clean and direct.
-     Dials: variance 6, motion 4, density 5. One accent (teal), cool neutrals, Geist only.
-     Radius rule: buttons and chips are full pill, cards 16px, fields 10px. */
+  /* Direction: a riso-printed post office. The pipeline reads a company's site and posts an email to
+     your inbox, so the page borrows envelopes, postage stamps, airmail stripes and rubber stamps,
+     printed in loud inks. One typeface (Times New Roman, by request). Colour lives in whole fields,
+     never as a single highlighted word. The one memorable moment: the verdict stamp landing on a result. */
   :root {
-    --bg: #f5f7f7; --surface: #ffffff; --surface2: #edf1f0; --surface3: #e3e9e8;
-    --ink: #121716; --ink2: #374240; --muted: #5a6664; --line: #d9e0de;
-    --accent: #0f766e; --accent-press: #0b5c56; --on-accent: #ffffff; --accent-soft: #ddf0ec;
-    --good: #146c43; --good-soft: #dff3e8; --warn: #8a5300; --warn-soft: #fbeed4;
-    --bad: #b02331; --bad-soft: #fbe3e5;
-    --r-card: 16px; --r-field: 10px;
+    --paper: #fbfbff; --paper2: #eeedff;
+    --ink: #1d1a2e; --ink2: #463f5c;
+    --pink: #ff3ea5; --pink-deep: #c8006a;
+    --yellow: #ffe14d;
+    --blue: #1f3bdf; --blue-deep: #172aa8;
+    --green: #00a86b; --green-deep: #00744a;
+    --orange: #ff6b1a; --orange-deep: #b84600;
+    --line: var(--ink);
+    --serif: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", serif;
+    --spring: cubic-bezier(.34, 1.56, .64, 1);
     --ease: cubic-bezier(.16, 1, .3, 1);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0d1211; --surface: #141b1a; --surface2: #1b2423; --surface3: #23302e;
-      --ink: #e7eeec; --ink2: #b7c4c1; --muted: #8b9a97; --line: #27322f;
-      --accent: #2dd4bf; --accent-press: #5eead4; --on-accent: #062421; --accent-soft: #0f2e2a;
-      --good: #5ad597; --good-soft: #11291c; --warn: #f2c25c; --warn-soft: #2c2210;
-      --bad: #ff8d97; --bad-soft: #321418;
+      --paper: #1d1a2e; --paper2: #272340; --ink: #f4f3ff; --ink2: #dcd6f2; --line: #f4f3ff;
+      --pink-deep: #ff7cc2; --green-deep: #3ee0a0; --orange-deep: #ff9a5c; --blue-deep: #8ea0ff;
     }
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   html, body { margin: 0; }
-  body {
-    background: var(--bg); color: var(--ink);
-    font: 400 16px/1.55 Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    -webkit-font-smoothing: antialiased; min-height: 100dvh;
-  }
-  ::selection { background: var(--accent); color: var(--on-accent); }
-  a { color: var(--accent); text-underline-offset: 3px; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 96px; }
-  .ph { line-height: 1; }
+  body { background: var(--paper); color: var(--ink); font: 400 19px/1.6 var(--serif); -webkit-font-smoothing: antialiased; min-height: 100dvh; overflow-x: hidden; }
+  /* riso halftone, on a fixed layer so scrolling never repaints it */
+  body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: .07;
+    background-image: radial-gradient(var(--ink) 1px, transparent 1.3px); background-size: 5px 5px; mix-blend-mode: multiply; } /* taste-skill-ignore: riso halftone texture, fixed layer */
+  @media (prefers-color-scheme: dark) { body::after { mix-blend-mode: screen; opacity: .05; } }
+  ::selection { background: var(--yellow); color: #1d1a2e; }
+  a { color: inherit; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+  i[class*="ph-"] { line-height: 1; display: inline-block; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
 
-  /* nav */
-  nav { display: flex; align-items: center; gap: 24px; height: 68px; }
-  .brand { font-weight: 700; font-size: 18px; letter-spacing: -.02em; color: var(--ink); text-decoration: none; margin-right: auto; }
-  .brand span { color: var(--accent); }
-  nav a.link { color: var(--ink2); text-decoration: none; font-size: 15px; font-weight: 500; transition: color .2s var(--ease); }
-  nav a.link:hover { color: var(--ink); }
+  /* ---------- hero: a cobalt field ---------- */
+  .hero-field { background: var(--blue); color: #fbfbff; position: relative; overflow: hidden; }
+  nav { display: flex; align-items: center; gap: 28px; height: 76px; }
+  .brand { font-size: 24px; font-weight: 700; font-style: italic; letter-spacing: -.01em; text-decoration: none; margin-right: auto; color: var(--yellow); }
+  nav a.link { color: #fbfbff; text-decoration: none; font-size: 19px; }
+  nav a.link:hover { text-decoration: underline; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 56px; align-items: center; padding: 48px 0 96px; }
+  h1 { font-size: clamp(48px, 6.6vw, 92px); line-height: .94; letter-spacing: -.035em; font-weight: 700; margin: 0 0 28px; color: var(--yellow); }
+  h1 .line { display: block; overflow: hidden; padding-bottom: .06em; }
+  h1 .line > span { display: inline-block; animation: lineUp .9s var(--ease) both; }
+  h1 .line:nth-child(2) > span { animation-delay: .09s; } h1 .line:nth-child(3) > span { animation-delay: .18s; }
+  @keyframes lineUp { from { transform: translateY(105%) rotate(2deg); } }
+  .lede { font-size: 24px; line-height: 1.5; margin: 0; max-width: 34ch; animation: fadeIn .8s .35s both; }
+  @keyframes fadeIn { from { opacity: 0; } }
 
-  /* hero: split, copy left, the working input right */
-  .hero { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 48px; align-items: center; padding: 56px 0 72px; }
-  h1 { font-size: clamp(38px, 4.2vw, 54px); line-height: 1.04; letter-spacing: -.04em; font-weight: 700; margin: 0 0 20px; }
-  .lede { font-size: 19px; line-height: 1.5; color: var(--ink2); margin: 0; max-width: 42ch; }
+  /* the composer is an envelope */
+  .envelope { position: relative; background: var(--yellow); color: #1d1a2e; padding: 30px 28px 28px; border: 4px solid #1d1a2e;
+    transform: rotate(1.6deg); animation: drop 1s .2s var(--spring) both; }
+  @keyframes drop { from { transform: translateY(-40px) rotate(-6deg); opacity: 0; } }
+  .envelope::before { /* airmail edge */ content: ""; position: absolute; inset: -3px -3px auto -3px; height: 12px;
+    background: repeating-linear-gradient(-45deg, var(--pink) 0 14px, #fbfbff 14px 24px, var(--blue) 24px 38px, #fbfbff 38px 48px); border: 3px solid #1d1a2e; border-bottom: 0; } /* taste-skill-ignore: airmail envelope stripe */
+  .envelope label { display: block; font-size: 24px; font-weight: 700; font-style: italic; margin: 6px 0 2px; }
+  .helper { font-size: 16px; margin: 0 0 14px; color: #1d1a2e; }
+  textarea, input.field { width: 100%; font: inherit; color: #1d1a2e; background: #fbfbff; border: 3px solid #1d1a2e; border-radius: 0; padding: 12px 14px; outline: none; }
+  textarea { line-height: 1.7; }
+  textarea::placeholder { color: #6b6480; font-style: italic; }
+  textarea:focus { border-color: var(--pink); }
+  #domains { min-height: 130px; resize: vertical; font-size: 19px; }
+  .try { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 18px 0 22px; font-size: 16px; font-style: italic; }
+  /* sample domains as postage stamps */
+  .chip { font: inherit; font-style: normal; font-size: 16px; font-weight: 700; color: #1d1a2e; border: 0; padding: 10px 12px; cursor: pointer;
+    outline: 2px dotted #1d1a2e; outline-offset: -6px; transition: transform .25s var(--spring); }
+  .chip:nth-of-type(1) { background: var(--pink); transform: rotate(-3deg); }
+  .chip:nth-of-type(2) { background: #8fe3c0; transform: rotate(2deg); }
+  .chip:nth-of-type(3) { background: #ffb38a; transform: rotate(-1deg); }
+  .chip:hover { transform: rotate(0) translateY(-4px) scale(1.06); }
+  .chip:active { transform: scale(.94); }
+  .btn { font: inherit; font-size: 24px; font-weight: 700; color: #fbfbff; background: #1d1a2e; border: 3px solid #1d1a2e; padding: 14px 26px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px; white-space: nowrap;
+    transition: transform .12s ease, background-color .2s ease, color .2s ease; }
+  .btn:hover:not(:disabled) { background: var(--pink); color: #1d1a2e; }
+  .btn:active:not(:disabled) { transform: translateY(3px) scale(.98); }
+  .btn:disabled { opacity: .6; cursor: progress; }
+  .btn.full { width: 100%; }
+  .btn i { font-size: 24px; }
 
-  .composer { background: var(--surface); border-radius: var(--r-card); padding: 24px; }
-  .composer label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 4px; }
-  .helper { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
-  textarea, input.field {
-    width: 100%; font: inherit; color: var(--ink); background: var(--bg);
-    border: 1px solid var(--line); border-radius: var(--r-field); padding: 12px 14px; outline: none;
-    transition: border-color .2s var(--ease), background-color .2s var(--ease);
-  }
-  textarea::placeholder { color: var(--muted); }
-  textarea:hover { border-color: var(--muted); }
-  textarea:focus { border-color: var(--accent); background: var(--surface); }
-  #domains { min-height: 132px; resize: vertical; }
-  .try { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 14px 0 20px; font-size: 14px; color: var(--muted); }
-  .chip { font: inherit; font-size: 14px; font-weight: 500; color: var(--ink2); background: var(--surface2); border: 0;
-    border-radius: 999px; padding: 6px 12px; cursor: pointer; transition: background-color .2s var(--ease), transform .12s var(--ease); }
-  .chip:hover { background: var(--surface3); color: var(--ink); }
-  .chip:active { transform: scale(.97); }
-  .btn { font: inherit; font-weight: 600; font-size: 16px; border: 0; border-radius: 999px; padding: 13px 24px; cursor: pointer;
-    color: var(--on-accent); background: var(--accent); display: inline-flex; align-items: center; gap: 10px; white-space: nowrap;
-    transition: background-color .2s var(--ease), transform .12s var(--ease); }
-  .btn:hover:not(:disabled) { background: var(--accent-press); }
-  .btn:active:not(:disabled) { transform: scale(.98); }
-  .btn:disabled { opacity: .55; cursor: default; }
-  .btn.full { width: 100%; justify-content: center; }
-  .btn.quiet { background: var(--surface2); color: var(--ink); }
-  .btn.quiet:hover:not(:disabled) { background: var(--surface3); }
+  /* ---------- the one marquee ---------- */
+  .marquee { background: var(--pink); color: #1d1a2e; border-block: 3px solid #1d1a2e; overflow: hidden; white-space: nowrap; }
+  .marquee-track { display: inline-flex; gap: 40px; padding: 14px 0; font-size: 34px; font-style: italic; font-weight: 700; animation: slide 38s linear infinite; }
+  .marquee-track span { display: inline-flex; align-items: center; gap: 40px; }
+  .marquee-track i { font-size: 24px; font-style: normal; }
+  @keyframes slide { to { transform: translateX(-50%); } }
 
-  /* pipeline stages */
-  .how { background: var(--surface2); border-radius: var(--r-card); padding: 28px; }
-  .how h2 { margin: 0 0 20px; }
-  .stages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
-  .stage { border-radius: 12px; padding: 14px 12px; background: var(--surface); color: var(--ink2);
-    transition: background-color .35s var(--ease), color .35s var(--ease), transform .35s var(--ease); }
-  .stage .ph { font-size: 22px; color: var(--muted); transition: color .35s var(--ease); }
-  .stage b { display: block; font-size: 15px; font-weight: 600; margin-top: 10px; color: var(--ink); }
-  .stage span { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
-  .stage.active { background: var(--accent); transform: translateY(-3px); }
-  .stage.active .ph, .stage.active b, .stage.active span { color: var(--on-accent); }
-  .stage.done { background: var(--accent-soft); }
-  .stage.done .ph { color: var(--accent); }
+  /* ---------- how it works: a yellow field of stamps ---------- */
+  .how-field { background: var(--yellow); color: #1d1a2e; padding: 88px 0 96px; }
+  h2 { font-size: clamp(34px, 4.4vw, 56px); line-height: 1; letter-spacing: -.03em; font-weight: 700; margin: 0 0 12px; }
+  .how-field p.intro { font-size: 24px; max-width: 46ch; margin: 0 0 44px; }
+  .stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .stage { --c: var(--pink); position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 28px; align-items: baseline; padding: 10px 150px 12px 18px; }
+  .stage:nth-child(2) { --c: #00c27c; } .stage:nth-child(3) { --c: var(--orange); } .stage:nth-child(4) { --c: #8ea0ff; }
+  .stage:nth-child(5) { --c: #ff9fd0; } .stage:nth-child(6) { --c: #8fe3c0; } .stage:nth-child(7) { --c: #ffb38a; }
+  /* colour sweeps across the stop that is running now */
+  .stage::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--c); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease); }
+  .stage.active::before { transform: scaleX(1); }
+  .stage.done::before { transform: scaleX(1); background: #fbfbff; }
+  .stage b { font-size: clamp(34px, 4.4vw, 56px); font-weight: 700; font-style: italic; line-height: 1; letter-spacing: -.025em; transition: transform .5s var(--spring); }
+  .stage.active b { transform: translateX(14px); }
+  .stage span { font-size: 19px; line-height: 1.4; }
+  .stage.done::after { content: "Done"; position: absolute; right: 18px; top: 18px; font-style: italic; font-weight: 700; font-size: 24px;
+    color: #00744a; border: 4px double currentColor; padding: 0 10px; background: #fbfbff; transform: rotate(-9deg);
+    animation: thunk .45s var(--spring) both; }
 
-  /* results */
-  h2 { font-size: 28px; line-height: 1.15; letter-spacing: -.025em; font-weight: 650; margin: 0; }
-  .results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin: 72px 0 20px; }
-  #status { color: var(--muted); font-size: 15px; }
-  .tally { display: flex; gap: 40px; flex-wrap: wrap; margin: 0 0 24px; }
-  .tally div { display: flex; flex-direction: column; }
-  .tally .v { font-size: 44px; font-weight: 650; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-  .tally .k { font-size: 14px; color: var(--muted); margin-top: 6px; }
-  .tally .good .v { color: var(--good); } .tally .warn .v { color: var(--warn); } .tally .bad .v { color: var(--bad); }
+  /* ---------- results on paper ---------- */
+  .results-field { padding: 96px 0 120px; }
+  .results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+  #status { font-size: 19px; font-style: italic; color: var(--ink); }
+  .tally { display: flex; gap: 0; flex-wrap: wrap; margin: 0 0 36px; border: 3px solid var(--line); width: fit-content; }
+  .tally div { display: flex; flex-direction: column; padding: 14px 26px 16px; }
+  .tally div:nth-child(1) { background: var(--paper2); } .tally div:nth-child(2) { background: var(--green); color: #1d1a2e; }
+  .tally div:nth-child(3) { background: var(--yellow); color: #1d1a2e; } .tally div:nth-child(4) { background: var(--pink); color: #1d1a2e; }
+  .tally .v { font-size: 56px; font-weight: 700; font-style: italic; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+  .tally .k { font-size: 16px; margin-top: 4px; }
 
-  .empty { background: var(--surface2); border-radius: var(--r-card); padding: 48px 32px; display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
-  .empty .ph { font-size: 36px; color: var(--accent); }
-  .empty b { display: block; font-size: 18px; font-weight: 600; }
-  .empty span { color: var(--ink2); }
+  .empty { border: 3px dashed var(--line); padding: 40px 36px; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; max-width: 820px; }
+  .empty i { font-size: 56px; color: var(--blue); }
+  .empty b { display: block; font-size: 34px; font-style: italic; line-height: 1.1; margin-bottom: 6px; }
 
-  .card { background: var(--surface); border-radius: var(--r-card); margin-bottom: 16px; overflow: hidden; animation: rise .5s var(--ease) both; }
-  @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
-  .card-head { display: flex; align-items: center; gap: 16px; padding: 22px 24px; flex-wrap: wrap; }
-  .fav { width: 44px; height: 44px; border-radius: 12px; background: var(--surface2); display: grid; place-items: center; overflow: hidden; flex: none; font-weight: 700; color: var(--accent); }
-  .fav img { width: 26px; height: 26px; }
-  .head-main { flex: 1 1 220px; min-width: 0; }
-  .head-main h3 { margin: 0; font-size: 20px; letter-spacing: -.02em; font-weight: 650; }
-  .head-main .sub { color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .badge { font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 999px; white-space: nowrap; }
-  .badge.good { background: var(--good-soft); color: var(--good); }
-  .badge.warn { background: var(--warn-soft); color: var(--warn); }
-  .badge.bad { background: var(--bad-soft); color: var(--bad); }
-  .badge.run { background: var(--accent-soft); color: var(--accent); }
+  /* each result is a postcard */
+  .card { position: relative; background: var(--paper); border: 3px solid var(--line); margin: 0 0 40px;
+    animation: postIn .7s var(--spring) both; }
+  .card::before { content: ""; display: block; height: 14px; border-bottom: 3px solid var(--line);
+    background: repeating-linear-gradient(-45deg, var(--pink) 0 16px, var(--paper) 16px 28px, var(--blue) 28px 44px, var(--paper) 44px 56px); } /* taste-skill-ignore: airmail postcard stripe */
+  /* the postcard's header is printed in the verdict's ink */
+  .card .card-head { background: #b9c4ff; color: #1d1a2e; border-bottom: 3px solid var(--line); padding-bottom: 18px; }
+  .card.tone-good .card-head { background: var(--green); } .card.tone-warn .card-head { background: var(--orange); } .card.tone-bad .card-head { background: var(--pink); }
+  .card .card-head .sub { color: #1d1a2e; }
+  @keyframes postIn { from { opacity: 0; transform: translateY(60px) rotate(-3deg); } }
+  .card-head { display: flex; align-items: center; gap: 18px; padding: 22px 26px 8px; flex-wrap: wrap; }
+  .fav { width: 56px; height: 56px; background: var(--yellow); border: 3px solid #1d1a2e; display: grid; place-items: center; flex: none; font-weight: 700; font-size: 24px; color: #1d1a2e; outline: 2px dotted #1d1a2e; outline-offset: -8px; }
+  .fav img { width: 28px; height: 28px; }
+  .head-main { flex: 1 1 240px; min-width: 0; }
+  .head-main h3 { margin: 0; font-size: 34px; line-height: 1.05; letter-spacing: -.02em; }
+  .head-main .sub { font-size: 16px; font-style: italic; color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* the rubber stamp: the page's one big moment */
+  .stamp { font-size: 24px; font-weight: 700; font-style: italic; padding: 2px 14px 4px; border: 4px double currentColor; background: #fbfbff; transform: rotate(-9deg);
+    white-space: nowrap; animation: thunk .55s .25s var(--spring) both; }
+  /* stamps always sit on white, so their inks are fixed in both themes */
+  .stamp.good { color: #00744a; } .stamp.warn { color: #b84600; } .stamp.bad { color: #c8006a; } .stamp.run { color: #172aa8; animation: none; transform: rotate(-4deg); }
+  @keyframes thunk { 0% { transform: scale(2.4) rotate(-22deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(-9deg); } }
   .fit { text-align: right; flex: none; }
-  .fit .n { font-size: 32px; font-weight: 650; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-  .fit .n small { font-size: 16px; color: var(--muted); font-weight: 500; }
-  .fit .l { font-size: 12px; color: var(--muted); }
+  .fit .n { font-size: 56px; font-weight: 700; font-style: italic; line-height: .9; font-variant-numeric: lining-nums; color: #1d1a2e; }
+  .fit .n small { font-size: 24px; }
+  .fit .l { font-size: 16px; font-style: italic; }
 
-  .card-body { padding: 0 24px 24px; }
-  .why { font-size: 17px; line-height: 1.5; color: var(--ink); max-width: 75ch; margin: 0; }
-  .flags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-  .flag { font-size: 13px; font-weight: 500; color: var(--warn); background: var(--warn-soft); padding: 4px 10px; border-radius: 999px; display: inline-flex; gap: 6px; align-items: center; }
+  .card-body { padding: 22px 26px 26px; }
+  .why { font-size: 24px; line-height: 1.5; max-width: 68ch; margin: 0; }
+  .flags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .flag { font-size: 16px; color: #1d1a2e; background: var(--yellow); border: 2px solid #1d1a2e; padding: 2px 10px; display: inline-flex; gap: 6px; align-items: center; }
 
-  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 18px; }
-  .box { background: var(--surface2); border-radius: 12px; padding: 18px; }
-  .box h4 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--ink); }
-  .person { display: flex; gap: 12px; align-items: center; }
-  .avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; color: var(--on-accent); background: var(--accent); }
-  .person .nm { font-weight: 650; font-size: 17px; } .person .ti { color: var(--ink2); font-size: 14px; }
-  .reasoning { color: var(--ink2); font-size: 14px; margin-top: 10px; }
-  .pain { display: grid; grid-template-columns: 20px 1fr; gap: 10px; margin-bottom: 14px; font-size: 15px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-top: 22px; }
+  .box { border: 3px solid var(--line); padding: 18px 20px; background: var(--paper); }
+  .box.tint-blue { background: #e4e8ff; color: #1d1a2e; } .box.tint-green { background: #d8f6e8; color: #1d1a2e; }
+  .box.tint-pink { background: #ffe0ef; color: #1d1a2e; } .box.tint-orange { background: #ffe5d4; color: #1d1a2e; }
+  .box h4 { margin: 0 0 12px; font-size: 24px; font-style: italic; line-height: 1.1; }
+  .person { display: flex; gap: 14px; align-items: center; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 24px; color: #fbfbff; background: var(--blue); border: 3px solid #1d1a2e; }
+  .person .nm { font-weight: 700; font-size: 24px; line-height: 1.1; } .person .ti { font-style: italic; font-size: 16px; }
+  .reasoning { font-size: 16px; margin-top: 10px; }
+  .pain { display: grid; grid-template-columns: 26px 1fr; gap: 10px; margin-bottom: 14px; font-size: 19px; }
   .pain:last-child { margin-bottom: 0; }
-  .pain .ph { color: var(--accent); font-size: 18px; margin-top: 2px; }
-  .pain .ev { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .pain i { color: var(--pink-deep); font-size: 24px; margin-top: 3px; }
+  @media (prefers-color-scheme: dark) { .pain i { color: #c8006a; } }
+  .pain .ev { font-size: 16px; font-style: italic; margin-top: 2px; opacity: .85; }
 
   .checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-  .checklist li { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
-  .ck { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; }
-  .ck.pass { background: var(--good-soft); color: var(--good); }
-  .ck.fail { background: var(--bad-soft); color: var(--bad); }
-  .ck.conflict { background: var(--warn-soft); color: var(--warn); }
-  .ck.unknown { background: var(--surface3); color: var(--muted); }
-  .ck-label { font-weight: 600; font-size: 15px; }
-  .ck-detail { color: var(--ink2); font-size: 14px; }
-  .ck-support { color: var(--muted); font-size: 13px; margin-top: 2px; }
-
+  .checklist li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; }
+  .ck { width: 28px; height: 28px; border: 2px solid #1d1a2e; display: grid; place-items: center; font-size: 16px; color: #1d1a2e; }
+  .ck.pass { background: var(--green); } .ck.fail { background: var(--pink); } .ck.conflict { background: var(--orange); } .ck.unknown { background: #fbfbff; }
+  .ck-label { font-weight: 700; font-size: 19px; line-height: 1.25; }
+  .ck-detail { font-size: 16px; }
+  .ck-support { font-size: 16px; font-style: italic; opacity: .8; margin-top: 2px; }
   .sig-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .sig { font-size: 13px; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: var(--surface); color: var(--ink2); }
-  .sig.on { background: var(--accent-soft); color: var(--accent); }
-  .sig.off { opacity: .6; text-decoration: line-through; }
-  .sig.hot { background: var(--accent); color: var(--on-accent); }
-  .sub-h { font-size: 14px; font-weight: 600; margin: 14px 0 8px; }
-  .scrape-warn { margin-top: 10px; font-size: 14px; color: var(--warn); background: var(--warn-soft); border-radius: 10px; padding: 8px 12px; display: flex; gap: 8px; align-items: center; }
+  .sig { font-size: 16px; padding: 2px 10px; border: 2px solid #1d1a2e; background: #fbfbff; color: #1d1a2e; }
+  .sig.on { background: var(--yellow); } .sig.off { opacity: .55; text-decoration: line-through; } .sig.hot { background: var(--pink); }
+  .sub-h { font-size: 19px; font-weight: 700; font-style: italic; margin: 14px 0 8px; }
+  .scrape-warn { margin-top: 10px; font-size: 16px; background: var(--orange); color: #1d1a2e; border: 2px solid #1d1a2e; padding: 6px 12px; display: flex; gap: 8px; align-items: center; }
+  .gate { display: grid; grid-template-columns: 36px 1fr; gap: 14px; background: var(--pink); color: #1d1a2e; border: 3px solid #1d1a2e; padding: 14px 18px; margin-bottom: 16px; }
+  .gate i { font-size: 34px; } .gate b { display: block; font-size: 24px; font-style: italic; } .gate span { font-size: 16px; }
 
-  .gate { display: grid; grid-template-columns: 28px 1fr; gap: 12px; background: var(--bad-soft); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
-  .gate .ph { font-size: 26px; color: var(--bad); }
-  .gate b { display: block; font-size: 15px; color: var(--bad); } .gate span { font-size: 14px; color: var(--ink2); }
+  /* the draft is a letter */
+  .mail { margin-top: 24px; border: 3px solid var(--line); background: var(--paper2); }
+  .mail-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 16px 20px 4px; flex-wrap: wrap; }
+  .mail-head h4 { margin: 0; font-size: 24px; font-style: italic; }
+  .mail-head span { font-size: 16px; font-style: italic; }
+  .mail-meta { padding: 4px 20px 0; font-size: 16px; }
+  .mail-row { display: grid; grid-template-columns: 76px 1fr; gap: 10px; align-items: center; padding: 6px 0; }
+  .mail-row b { word-break: break-word; }
+  .mail-row input { font: inherit; font-weight: 700; font-size: 19px; color: #1d1a2e; background: #fbfbff; border: 3px solid #1d1a2e; padding: 8px 12px; outline: none; width: 100%; }
+  .mail-row input:focus { border-color: var(--pink); }
+  .mail textarea.body { display: block; width: calc(100% - 40px); margin: 10px 20px 0; min-height: 300px; font-size: 19px; line-height: 1.65; }
+  .mail-foot { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 18px 20px 22px; flex-wrap: wrap; }
+  .meta-notes { font-size: 16px; max-width: 620px; }
+  .warnline { color: var(--pink-deep); }
+  .send-wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .sendstatus { font-size: 16px; font-style: italic; }
+  .sendstatus.ok { color: var(--green-deep); } .sendstatus.err { color: var(--pink-deep); }
 
-  /* draft */
-  .mail { margin-top: 18px; border-radius: 12px; overflow: hidden; background: var(--surface2); }
-  .mail-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px 4px; flex-wrap: wrap; }
-  .mail-head h4 { margin: 0; font-size: 15px; font-weight: 600; }
-  .mail-head span { font-size: 13px; color: var(--muted); }
-  .mail-meta { padding: 4px 18px 0; font-size: 14px; color: var(--muted); }
-  .mail-row { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: center; padding: 8px 0; }
-  .mail-row b { color: var(--ink); font-weight: 600; word-break: break-word; }
-  .mail-row input { font: inherit; font-weight: 650; font-size: 16px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-field); padding: 9px 12px; outline: none; width: 100%; }
-  .mail-row input:focus { border-color: var(--accent); }
-  .mail textarea.body { display: block; width: calc(100% - 36px); margin: 8px 18px 0; background: var(--surface); min-height: 280px; font-size: 16px; line-height: 1.65; }
-  .mail-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 18px 18px; flex-wrap: wrap; }
-  .meta-notes { font-size: 14px; color: var(--ink2); max-width: 600px; }
-  .meta-notes b { color: var(--ink); font-weight: 600; }
-  .warnline { color: var(--bad); }
-  .send-wrap { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .sendstatus { font-size: 14px; font-weight: 500; }
-  .sendstatus.ok { color: var(--good); } .sendstatus.err { color: var(--bad); }
-
-  details { margin-top: 16px; }
-  summary { cursor: pointer; font-size: 15px; font-weight: 600; color: var(--accent); list-style: none; display: inline-flex; gap: 6px; align-items: center; }
+  details { margin-top: 20px; }
+  summary { cursor: pointer; font-size: 19px; font-weight: 700; font-style: italic; list-style: none; display: inline-flex; gap: 8px; align-items: center; color: var(--blue-deep); }
   summary::-webkit-details-marker { display: none; }
-  summary .ph { transition: transform .25s var(--ease); }
-  details[open] summary .ph { transform: rotate(90deg); }
-  .timeline { margin: 0; padding: 0 0 0 18px; font-size: 14px; color: var(--ink2); }
+  summary i { transition: transform .3s var(--spring); }
+  details[open] summary i { transform: rotate(90deg); }
+  .timeline { margin: 0; padding: 0 0 0 22px; font-size: 16px; }
   .timeline li { padding: 0 0 6px; word-break: break-word; }
-  .evidence { display: flex; flex-direction: column; gap: 6px; }
-  .evidence span { font-size: 14px; background: var(--surface); border-radius: 10px; padding: 8px 12px; color: var(--ink2); }
-  .secs { color: var(--muted); font-size: 13px; margin-top: 14px; text-align: right; }
+  .evidence { display: flex; flex-direction: column; gap: 8px; }
+  .evidence span { font-size: 16px; background: #fbfbff; color: #1d1a2e; border: 2px solid #1d1a2e; padding: 6px 10px; }
+  .secs { font-size: 16px; font-style: italic; margin-top: 16px; text-align: right; opacity: .75; }
 
-  /* loading skeleton, same shape as a finished card */
-  .loading { padding: 0 24px 24px; }
-  .ticker { color: var(--ink2); font-size: 15px; font-weight: 500; margin-bottom: 14px; }
-  .sk { height: 12px; border-radius: 6px; margin-top: 10px; background: linear-gradient(90deg, var(--surface2), var(--surface3), var(--surface2)); background-size: 200% 100%; animation: sh 1.4s infinite linear; }
-  .sk.block { height: 120px; border-radius: 12px; margin-top: 16px; }
-  @keyframes sh { to { background-position: -200% 0; } }
-  .err { color: var(--bad); }
+  /* loading: an envelope in transit */
+  .loading { padding: 8px 26px 28px; }
+  .ticker { font-size: 24px; font-style: italic; display: flex; gap: 12px; align-items: center; }
+  .ticker i { font-size: 24px; color: var(--blue-deep); animation: fly 1.4s ease-in-out infinite; }
+  @keyframes fly { 50% { transform: translate(8px, -6px) rotate(8deg); } }
+  .sk { height: 14px; margin-top: 14px; background: var(--c, var(--yellow)); transform-origin: left; animation: pulse 1s ease-in-out infinite alternate; }
+  .sk:nth-of-type(2) { --c: var(--pink); animation-delay: .2s; } .sk:nth-of-type(3) { --c: #8ea0ff; animation-delay: .4s; }
+  @keyframes pulse { to { opacity: .35; transform: scaleX(.92); } }
+  .err { color: var(--pink-deep); }
 
-  footer { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 14px; margin-top: 80px; }
-  footer b { color: var(--ink); font-weight: 600; }
+  /* ---------- footer: a pink field with the name at full width ---------- */
+  footer { background: var(--pink); color: #1d1a2e; border-top: 3px solid #1d1a2e; padding: 40px 0 28px; overflow: hidden; }
+  footer .big { font-size: clamp(56px, 12.5vw, 176px); font-weight: 700; font-style: italic; letter-spacing: -.045em; line-height: .85; margin: 0 0 24px; white-space: nowrap; }
+  footer .row { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 19px; }
 
-  @media (max-width: 1000px) {
-    .stages { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  }
-  @media (max-width: 860px) {
-    .hero { grid-template-columns: 1fr; gap: 32px; padding: 32px 0 48px; }
-    h1 { max-width: none; }
+  /* section reveal: whole sections settle in once, triggered by IntersectionObserver */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  .no-js .reveal { opacity: 1; transform: none; }
+
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 24px 0 72px; }
+    .envelope { transform: rotate(.8deg); }
   }
   @media (max-width: 720px) {
-    .wrap { padding: 0 16px 72px; }
+    body { font-size: 19px; }
+    .wrap { padding: 0 18px; }
+    nav { gap: 18px; } nav a.hide-sm { display: none; }
     .grid2 { grid-template-columns: 1fr; }
-    .stages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; scrollbar-width: thin; scrollbar-color: var(--surface3) transparent; }
-    .stages::-webkit-scrollbar { height: 6px; }
-    .stages::-webkit-scrollbar-track { background: transparent; }
-    .stages::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 999px; }
-    .stage { flex: 0 0 132px; scroll-snap-align: start; }
-    .how { padding: 20px; }
-    .card-head { padding: 18px; } .card-body, .loading { padding: 0 18px 18px; }
-    .tally { gap: 24px; } .tally .v { font-size: 36px; }
-    .empty { grid-template-columns: 1fr; padding: 32px 20px; }
-    nav a.hide-sm { display: none; }
+    .stage { grid-template-columns: 1fr; gap: 2px; padding: 10px 110px 12px 14px; }
+    .stage.done::after { font-size: 19px; right: 10px; top: 12px; }
+    .how-field, .results-field { padding: 64px 0 72px; }
+    .card-head { padding: 18px 18px 6px; } .card-body, .loading { padding: 6px 18px 20px; }
+    .tally .v { font-size: 34px; } .tally div { padding: 10px 16px 12px; }
+    .empty { grid-template-columns: 1fr; padding: 28px 22px; }
+    .head-main h3 { font-size: 24px; } .fit .n { font-size: 34px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
   }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <nav aria-label="Main">
-    <a class="brand" href="/">Sprinto <span>Outreach</span></a>
-    <a class="link hide-sm" href="#how">How it works</a>
-    <a class="link" href="https://github.com/sharanraj-1/sprinto-outreach" target="_blank" rel="noreferrer">Source</a>
-  </nav>
-
-  <header class="hero">
-    <div>
-      <h1>Turn a domain into a reviewed cold email.</h1>
-      <p class="lede">Scrapes the site, checks fit for Sprinto, finds the decision-maker and drafts an email. Nothing sends until you approve.</p>
-    </div>
-    <section class="composer" aria-label="Run the pipeline">
-      <input id="pw" type="hidden" value="">
-      <label for="domains">Prospect domains</label>
-      <p class="helper" id="domains-help">One per line. Each company takes about a minute.</p>
-      <textarea id="domains" placeholder="plane.so&#10;acme-saas.com" spellcheck="false" aria-describedby="domains-help"></textarea>
-      <div class="try">Try
-        <button type="button" class="chip" data-d="gallabox.com">gallabox.com</button>
-        <button type="button" class="chip" data-d="zipy.ai">zipy.ai</button>
-        <button type="button" class="chip" data-d="thoughtbot.com">thoughtbot.com</button>
+<body class="no-js">
+<div class="hero-field">
+  <div class="wrap">
+    <nav aria-label="Main">
+      <a class="brand" href="/">Sprinto Outreach</a>
+      <a class="link hide-sm" href="#how">How it works</a>
+      <a class="link" href="https://github.com/sharanraj-1/sprinto-outreach" target="_blank" rel="noreferrer">Source</a>
+    </nav>
+    <header class="hero">
+      <div>
+        <h1><span class="line"><span>A cold email</span></span><span class="line"><span>worth reading.</span></span></h1>
+        <p class="lede">Paste a domain. It checks the fit for Sprinto, finds the right person and drafts an email you approve.</p>
       </div>
-      <button class="btn full" id="go">Run pipeline <i class="ph ph-arrow-right" aria-hidden="true"></i></button>
-    </section>
-  </header>
-
-  <section class="how" id="how" aria-labelledby="how-h">
-    <h2 id="how-h">How it works</h2>
-    <ol class="stages" id="steps">
-      <li class="stage"><i class="ph ph-globe-simple" aria-hidden="true"></i><b>Scrape</b><span>HTML, scripts, sitemap, job board</span></li>
-      <li class="stage"><i class="ph ph-list-magnifying-glass" aria-hidden="true"></i><b>Extract</b><span>Named facts with their source page</span></li>
-      <li class="stage"><i class="ph ph-seal-check" aria-hidden="true"></i><b>Qualify</b><span>B2B SaaS, not certified, right stage</span></li>
-      <li class="stage"><i class="ph ph-user-focus" aria-hidden="true"></i><b>Find contact</b><span>Security lead, then CTO, then founder</span></li>
-      <li class="stage"><i class="ph ph-target" aria-hidden="true"></i><b>Pain points</b><span>Two, each tied to a scraped fact</span></li>
-      <li class="stage"><i class="ph ph-pencil-simple-line" aria-hidden="true"></i><b>Draft</b><span>Checked in code, redrafted once</span></li>
-      <li class="stage"><i class="ph ph-paper-plane-tilt" aria-hidden="true"></i><b>Send</b><span>To your inbox, after you review</span></li>
-    </ol>
-  </section>
-
-  <div class="results-head"><h2>Results</h2><span id="status">About 30 to 60 seconds per company</span></div>
-  <div class="tally" id="stats" hidden>
-    <div><span class="v" id="s-all">0</span><span class="k">Researched</span></div>
-    <div class="good"><span class="v" id="s-good">0</span><span class="k">Drafted</span></div>
-    <div class="warn"><span class="v" id="s-warn">0</span><span class="k">Needs a person</span></div>
-    <div class="bad"><span class="v" id="s-bad">0</span><span class="k">Disqualified</span></div>
+      <section class="envelope" aria-label="Run the pipeline">
+        <input id="pw" type="hidden" value="">
+        <label for="domains">Who should we write to?</label>
+        <p class="helper" id="domains-help">Company domains, one per line. Each takes about a minute.</p>
+        <textarea id="domains" placeholder="plane.so&#10;acme-saas.com" spellcheck="false" aria-describedby="domains-help"></textarea>
+        <div class="try">or try
+          <button type="button" class="chip" data-d="gallabox.com">gallabox.com</button>
+          <button type="button" class="chip" data-d="zipy.ai">zipy.ai</button>
+          <button type="button" class="chip" data-d="thoughtbot.com">thoughtbot.com</button>
+        </div>
+        <button class="btn full" id="go"><i class="ph-bold ph-paper-plane-tilt" aria-hidden="true"></i> Run the pipeline</button>
+      </section>
+    </header>
   </div>
-  <section id="results" aria-live="polite">
-    <div class="empty" id="empty"><i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-      <div><b>No companies yet</b><span>Add a domain above, or pick one of the examples, then run the pipeline. Every decision shows up here with its reason.</span></div>
-    </div>
-  </section>
-
-  <footer><span><b>Sprinto Outreach</b>. Drafts go to your own inbox, never to the prospect.</span><span>Models via OpenRouter. Contacts via Hunter.</span></footer>
 </div>
 
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Reads the website <i class="ph-fill ph-asterisk"></i> Checks it is B2B SaaS <i class="ph-fill ph-asterisk"></i> Skips anyone already certified <i class="ph-fill ph-asterisk"></i> Finds the security lead <i class="ph-fill ph-asterisk"></i> Drafts the email <i class="ph-fill ph-asterisk"></i> Sends it to you, never to them <i class="ph-fill ph-asterisk"></i></span>
+    <span>Reads the website <i class="ph-fill ph-asterisk"></i> Checks it is B2B SaaS <i class="ph-fill ph-asterisk"></i> Skips anyone already certified <i class="ph-fill ph-asterisk"></i> Finds the security lead <i class="ph-fill ph-asterisk"></i> Drafts the email <i class="ph-fill ph-asterisk"></i> Sends it to you, never to them <i class="ph-fill ph-asterisk"></i></span>
+  </div>
+</div>
+
+<section class="how-field" id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <h2 id="how-h" class="reveal">Seven stops on the way to your inbox</h2>
+    <p class="intro reveal">Every run moves through these in order. Colour floods the stop it is on right now.</p>
+    <ol class="stages" id="steps">
+      <li class="stage reveal"><b>Scrape</b><span>HTML, scripts, sitemap and job board</span></li>
+      <li class="stage reveal"><b>Extract</b><span>Named facts, each with its page</span></li>
+      <li class="stage reveal"><b>Qualify</b><span>B2B SaaS, not certified, right stage</span></li>
+      <li class="stage reveal"><b>Find contact</b><span>Security lead, then CTO, then founder</span></li>
+      <li class="stage reveal"><b>Pain points</b><span>Two, each tied to a fact from the site</span></li>
+      <li class="stage reveal"><b>Draft</b><span>Checked in code, redrafted once</span></li>
+      <li class="stage reveal"><b>Send</b><span>To your inbox, after you read it</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="results-field" aria-labelledby="res-h">
+  <div class="wrap">
+    <div class="results-head reveal"><h2 id="res-h">Results</h2><span id="status">About 30 to 60 seconds per company</span></div>
+    <div class="tally" id="stats" hidden>
+      <div><span class="v" id="s-all">0</span><span class="k">Researched</span></div>
+      <div><span class="v" id="s-good">0</span><span class="k">Drafted</span></div>
+      <div><span class="v" id="s-warn">0</span><span class="k">Need a person</span></div>
+      <div><span class="v" id="s-bad">0</span><span class="k">Disqualified</span></div>
+    </div>
+    <div id="results" aria-live="polite">
+      <div class="empty reveal" id="empty"><i class="ph-duotone ph-mailbox" aria-hidden="true"></i>
+        <div><b>The mailbox is empty</b>Add a domain up top, or tap one of the stamps, then run the pipeline. Every decision lands here with its reason.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="big reveal" aria-hidden="true">Sprinto Outreach</p>
+    <div class="row"><span>Drafts go to your own inbox, never to the prospect.</span><span>Models via OpenRouter. Contacts via Hunter.</span></div>
+  </div>
+</footer>
+
 <script>
+document.body.classList.remove("no-js");
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const icon = (name) => `<i class="ph ph-${name}" aria-hidden="true"></i>`;
+const icon = (name, w = "bold") => `<i class="ph-${w} ph-${name}" aria-hidden="true"></i>`;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* sections settle in once as they enter the viewport */
+const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
+document.querySelectorAll(".reveal").forEach(el => { const i = [...el.parentElement.children].indexOf(el); el.style.transitionDelay = `${Math.min(i, 7) * 70}ms`; io.observe(el); });
 
 const STATUS = {
-  drafted: ["Email drafted", "good"], emailed: ["Sent", "good"], qualified: ["Qualified", "good"],
+  drafted: ["Drafted", "good"], emailed: ["Sent", "good"], qualified: ["Qualified", "good"],
   needs_contact: ["Needs a contact", "warn"], manual_review: ["Manual review", "warn"],
   disqualified: ["Disqualified", "bad"], error: ["Error", "bad"],
 };
@@ -329,30 +382,24 @@ async function api(path, body) {
   return data;
 }
 
-/* stage strip: an estimate while the server works, then the real outcome */
+/* the stamp strip: an estimate while the server works, then the real outcome */
 const steps = [...document.querySelectorAll(".stage")];
 let stepTimer = null;
-/* On narrow screens the strip scrolls sideways: keep the active stage in view without moving the page. */
-function showStage(el) {
-  const strip = $("#steps");
-  if (strip.scrollWidth <= strip.clientWidth) return;
-  strip.scrollTo({ left: el.offsetLeft - strip.offsetLeft - 8, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-}
 function animateSteps() {
   clearInterval(stepTimer);
-  steps.forEach(s => s.className = "stage");
+  steps.forEach(s => s.classList.remove("active", "done"));
   let i = 0; steps[0].classList.add("active");
-  const msgs = ["Fetching and scanning the site", "Checking it is B2B SaaS", "Verifying against every source", "Finding the decision-maker", "Working out pain points", "Drafting the email"];
+  const msgs = ["Reading the website", "Checking it is B2B SaaS", "Verifying against every source", "Finding the decision-maker", "Working out pain points", "Drafting the email"];
   const set = () => { const el = $(".ticker-text"); if (el) el.textContent = msgs[Math.min(i, 5)] + "…"; };
   set();
   stepTimer = setInterval(() => {
-    if (i < 5) { steps[i].className = "stage done"; i++; steps[i].classList.add("active"); set(); showStage(steps[i]); }
+    if (i < 5) { steps[i].classList.replace("active", "done"); i++; steps[i].classList.add("active"); set(); }
   }, 7000);
 }
 function finishSteps(r) {
   clearInterval(stepTimer);
   const reached = r.email ? 6 : r.poc ? 4 : r.judgment || r.status === "disqualified" ? 3 : 1;
-  steps.forEach((s, j) => s.className = "stage" + (j < reached ? " done" : ""));
+  steps.forEach((s, j) => { s.classList.remove("active", "done"); if (j < reached) s.classList.add("done"); });
 }
 
 function favicon(domain) {
@@ -361,20 +408,20 @@ function favicon(domain) {
 
 function render(card, r) {
   const [label, tone] = STATUS[r.status] || [r.status, ""];
+  card.className = `card tone-${tone}`;
   const fit = r.judgment ? r.judgment.fit_score : null;
-  const fitColor = fit == null ? "" : fit >= 4 ? "var(--good)" : fit >= 3 ? "var(--warn)" : "var(--bad)";
   const company = (r.facts && r.facts.company_name) || r.domain;
   const summary = (r.facts && r.facts.product_summary) || "";
 
   let h = `<div class="card-head">
       <div class="fav">${favicon(r.domain)}</div>
       <div class="head-main"><h3>${esc(company)}</h3><div class="sub">${esc(r.domain)}${summary ? ". " + esc(summary) : ""}</div></div>
-      <span class="badge ${tone}">${esc(label)}</span>
-      ${fit != null ? `<div class="fit"><div class="n" style="color:${fitColor}">${fit}<small>/5</small></div><div class="l">Fit</div></div>` : ""}
+      <span class="stamp ${tone}">${esc(label)}</span>
+      ${fit != null ? `<div class="fit"><div class="n">${fit}<small>/5</small></div><div class="l">fit for Sprinto</div></div>` : ""}
     </div><div class="card-body">`;
 
   if (r.not_b2b) {
-    h += `<div class="gate">${icon("prohibit")}<div><b>Not a B2B SaaS company, stopped at the first check</b>
+    h += `<div class="gate">${icon("prohibit")}<div><b>Not a B2B SaaS company, so it stopped at the first check</b>
       <span>Flagged straight after the homepage. Nothing else was fetched and no contact search was spent.</span></div></div>`;
   }
   h += `<p class="why">${esc(r.reason)}</p>`;
@@ -387,7 +434,7 @@ function render(card, r) {
   if (cl.length || Object.keys(sg).length) {
     h += `<div class="grid2">`;
     if (cl.length) {
-      h += `<div class="box"><h4>Verification</h4><ul class="checklist">${cl.map(c => `
+      h += `<div class="box tint-green"><h4>Verification</h4><ul class="checklist">${cl.map(c => `
         <li><span class="ck ${esc(c.status)}">${icon(CK[c.status] || "question")}</span><div>
           <div class="ck-label">${esc(c.label)}</div><div class="ck-detail">${esc(c.detail)}</div>
           ${c.support && c.support.length ? `<div class="ck-support">${esc(c.support.join(", "))}</div>` : ""}
@@ -408,10 +455,10 @@ function render(card, r) {
       const v = sg.vendors || {};
       const hot = ["compliance", "enterprise"];
       const tools = Object.entries(v).flatMap(([k, arr]) => arr.map(t => `<span class="sig ${hot.includes(k) ? "hot" : ""}" title="${esc(k)}">${esc(t)}</span>`));
-      if (tools.length) s += `<div class="sub-h">Tools detected in their code</div><div class="sig-row">${tools.join("")}</div>`;
+      if (tools.length) s += `<div class="sub-h">Tools spotted in their code</div><div class="sig-row">${tools.join("")}</div>`;
       const scrape = cl.find(c => c.id === "scrape");
       if (scrape && scrape.status !== "pass") s += `<div class="scrape-warn">${icon("warning")} ${esc(scrape.detail)}</div>`;
-      h += `<div class="box"><h4>What was scanned</h4>${s}</div>`;
+      h += `<div class="box tint-blue"><h4>What it scanned</h4>${s}</div>`;
     }
     h += `</div>`;
   }
@@ -421,7 +468,7 @@ function render(card, r) {
     h += `<div class="grid2">`;
     if (hasPerson) {
       const p = r.poc, init = ((p.first_name || "?")[0] + (p.last_name || "")[0]).toUpperCase();
-      h += `<div class="box"><h4>Decision-maker</h4>
+      h += `<div class="box tint-orange"><h4>Who to write to</h4>
         <div class="person"><div class="avatar">${esc(init)}</div>
           <div><div class="nm">${esc(p.first_name)} ${esc(p.last_name)}</div><div class="ti">${esc(p.position)}</div></div></div>
         <div class="reasoning">${esc(p.why)}</div>
@@ -429,7 +476,7 @@ function render(card, r) {
       </div>`;
     }
     if (r.pain_points) {
-      h += `<div class="box"><h4>Likely pain points</h4>${r.pain_points.map(p =>
+      h += `<div class="box tint-pink"><h4>Likely pain points</h4>${r.pain_points.map(p =>
         `<div class="pain">${icon("target")}<div>${esc(p.pain)}<div class="ev">Evidence: ${esc(p.evidence)}</div></div></div>`).join("")}</div>`;
     }
     h += `</div>`;
@@ -438,7 +485,7 @@ function render(card, r) {
   if (r.email) {
     const e = r.email, p = r.poc;
     h += `<div class="mail">
-      <div class="mail-head"><h4>Draft email</h4><span>Edit anything before you send it</span></div>
+      <div class="mail-head"><h4>The draft</h4><span>Change anything before you send it</span></div>
       <div class="mail-meta">
         <div class="mail-row"><span>For</span><b>${esc(p.first_name)} ${esc(p.last_name)} &lt;${esc(p.email)}&gt;</b></div>
         <div class="mail-row"><label for="subj-${esc(r.domain)}">Subject</label><input class="subj" id="subj-${esc(r.domain)}" value="${esc(e.subject)}"></div>
@@ -447,7 +494,7 @@ function render(card, r) {
       <div class="mail-foot">
         <div class="meta-notes"><b>Hook:</b> ${esc(e.hook_fact_used)}<br><b>Angle:</b> ${esc(e.why_this_angle)}
           ${e.check_problems && e.check_problems.length ? `<br><span class="warnline">Auto-check: ${esc(e.check_problems.join("; "))}</span>` : ""}</div>
-        <div class="send-wrap"><span class="sendstatus" role="status"></span><button class="btn send">Send to my inbox ${icon("paper-plane-tilt")}</button></div>
+        <div class="send-wrap"><span class="sendstatus" role="status"></span><button class="btn send">${icon("paper-plane-tilt")} Send to my inbox</button></div>
       </div>
     </div>`;
   }
@@ -455,13 +502,13 @@ function render(card, r) {
   const log = r.research_log || [];
   const ev = (r.judgment && r.judgment.evidence_used) || [];
   if (log.length || ev.length) {
-    h += `<details><summary>${icon("caret-right")} How it decided</summary><div class="grid2" style="margin-top:12px">`;
+    h += `<details><summary>${icon("caret-right")} How it decided</summary><div class="grid2" style="margin-top:14px">`;
     if (log.length) h += `<div class="box"><h4>Research loop</h4><ol class="timeline">${log.map(l => `<li>${esc(l)}</li>`).join("")}</ol></div>`;
-    if (ev.length) h += `<div class="box"><h4>Evidence behind the score</h4><div class="evidence">${ev.map(x => `<span>${esc(x)}</span>`).join("")}</div>
+    if (ev.length) h += `<div class="box tint-blue"><h4>Evidence behind the score</h4><div class="evidence">${ev.map(x => `<span>${esc(x)}</span>`).join("")}</div>
       ${r.judgment.risks && r.judgment.risks.length ? `<div class="reasoning"><b>Risks:</b> ${esc(r.judgment.risks.join("; "))}</div>` : ""}</div>`;
     h += `</div></details>`;
   }
-  h += `<div class="secs">Took ${esc(r.seconds)}s</div></div>`;
+  h += `<div class="secs">Took ${esc(r.seconds)} seconds</div></div>`;
   card.innerHTML = h;
   bump(tone);
 
@@ -472,7 +519,7 @@ function render(card, r) {
     const email = { ...r.email, subject: $(".subj", card).value, body: $(".body", card).value };
     try {
       const out = await api("/api/send", { email, poc: r.poc, company, reason: r.reason });
-      if (out.send_status === "sent") { st.className = "sendstatus ok"; st.textContent = `Sent to ${out.to}`; btn.innerHTML = `Sent ${icon("check")}`; steps[6].className = "stage done"; }
+      if (out.send_status === "sent") { st.className = "sendstatus ok"; st.textContent = `Sent to ${out.to}`; btn.innerHTML = `${icon("check")} Sent`; steps[6].classList.remove("active"); steps[6].classList.add("done"); }
       else { st.className = "sendstatus err"; st.textContent = out.send_status; btn.disabled = false; }
     } catch (err) { st.className = "sendstatus err"; st.textContent = err.message; btn.disabled = false; }
   };
@@ -483,25 +530,25 @@ $("#go").onclick = async () => {
   if (!domains.length) { $("#domains").focus(); return; }
   $("#go").disabled = true;
   const empty = $("#empty"); if (empty) empty.remove();
-  $("#how").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  $("#how").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   for (let i = 0; i < domains.length; i++) {
     const d = domains[i];
     $("#status").textContent = `Researching ${i + 1} of ${domains.length}`;
     const card = document.createElement("article");
     card.className = "card";
     card.innerHTML = `<div class="card-head"><div class="fav">${favicon(d)}</div>
-      <div class="head-main"><h3>${esc(d)}</h3><div class="sub">Working on it</div></div><span class="badge run">Running</span></div>
-      <div class="loading"><div class="ticker"><span class="ticker-text">Fetching the website…</span></div>
-      <div class="sk" style="width:88%"></div><div class="sk" style="width:64%"></div>
-      <div class="grid2"><div class="sk block"></div><div class="sk block"></div></div></div>`;
+      <div class="head-main"><h3>${esc(d)}</h3><div class="sub">In the post</div></div><span class="stamp run">Running</span></div>
+      <div class="loading"><div class="ticker">${icon("paper-plane-tilt")}<span class="ticker-text">Reading the website…</span></div>
+      <div class="sk" style="width:86%"></div><div class="sk" style="width:62%"></div><div class="sk" style="width:74%"></div></div>`;
     $("#results").prepend(card);
     animateSteps();
     try { const r = await api("/api/run", { domain: d }); finishSteps(r); render(card, r); }
     catch (err) {
       clearInterval(stepTimer);
-      steps.forEach(s => s.className = "stage");
+      steps.forEach(s => s.classList.remove("active", "done"));
+      card.className = "card tone-bad";
       card.innerHTML = `<div class="card-head"><div class="fav">${favicon(d)}</div><div class="head-main"><h3>${esc(d)}</h3>
-        <div class="sub err">${esc(err.message)}</div></div><span class="badge bad">Error</span></div>`;
+        <div class="sub err">${esc(err.message)}</div></div><span class="stamp bad">Error</span></div>`;
       bump("bad");
     }
   }
