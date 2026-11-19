@@ -16,8 +16,11 @@ CACHE_ROOT = "/tmp/sprinto-cache" if os.getenv("VERCEL") else os.path.join(HERE,
 APP_PASSWORD = os.getenv("APP_PASSWORD", "")
 
 # --- Model -------------------------------------------------------------------
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").strip().lower()   # gemini | claude
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+# OpenRouter: its own variable, or an OpenRouter key (sk-or-...) pasted into GEMINI_API_KEY.
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "") or (GEMINI_API_KEY if GEMINI_API_KEY.startswith("sk-or-") else "")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-3.8-flash")
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openrouter" if OPENROUTER_API_KEY else "gemini").strip().lower()   # openrouter | gemini | claude
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-5-5")
 
@@ -25,6 +28,11 @@ CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-5-5")
 HUNTER_API_KEY = os.getenv("HUNTER_API_KEY", "")
 GMAIL_ADDRESS = os.getenv("GMAIL_ADDRESS", "")          # you send FROM and TO this
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+# Resend (tried first when set). The sandbox sender only delivers to the Resend account's own email.
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+RESEND_FROM = os.getenv("RESEND_FROM", "Sprinto Outreach Drafts <onboarding@resend.dev>")
+# The one inbox every reviewed draft goes to. Defaults to the Gmail address.
+SEND_TO = os.getenv("SEND_TO", "") or GMAIL_ADDRESS
 SENDER_NAME = os.getenv("SENDER_NAME", "Aryan")         # who signs the email
 SENDER_TITLE = os.getenv("SENDER_TITLE", "Growth, Sprinto")
 

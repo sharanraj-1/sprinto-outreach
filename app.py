@@ -70,4 +70,4 @@ def api_send(req: SendReq, x_app_password: str = Header("")):
         status = send(req.email, req.poc, req.company, req.reason)
     except SendAuthError as e:
         raise HTTPException(502, str(e))
-    return {"send_status": status, "to": config.GMAIL_ADDRESS}
+    return {"send_status": status, "to": config.SEND_TO}

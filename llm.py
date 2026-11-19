@@ -1,7 +1,8 @@
 """One helper for every model call: JSON in a fixed schema, or a clear failure.
 
 Provider is set by LLM_PROVIDER in .env:
-  gemini (default) - free key from aistudio.google.com
+  openrouter       - default whenever OPENROUTER_API_KEY is set (Gemini models via openrouter.ai)
+  gemini           - free key from aistudio.google.com
   claude           - needs an Anthropic Console key with credit
 
 Either way:
@@ -83,6 +84,56 @@ def _call_gemini(system: str, user: str, schema: Dict, effort: str, max_tokens: 
     return json.loads(resp.text)
 
 
+# ---------------- OpenRouter --------------------------------------------------
+# OpenAI-compatible endpoint; runs the same Gemini models with the same JSON schemas.
+def _call_openrouter(system: str, user: str, schema: Dict, effort: str, max_tokens: int) -> Dict:
+    import requests
+
+    if not config.OPENROUTER_API_KEY:
+        raise LLMError("OPENROUTER_API_KEY is not set")
+    payload = {
+        "model": config.OPENROUTER_MODEL,
+        "max_tokens": max_tokens,
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        "response_format": {"type": "json_schema", "json_schema": {"name": "result", "strict": True, "schema": schema}},
+        "reasoning": {"effort": effort if effort in ("low", "medium", "high") else "medium", "exclude": True},
+    }
+    headers = {"Authorization": f"Bearer {config.OPENROUTER_API_KEY}", "X-Title": "Sprinto Outreach"}
+    for attempt in range(5):
+        try:
+            r = requests.post("https://openrouter.ai/api/v1/chat/completions", json=payload, headers=headers, timeout=120)
+        except requests.RequestException as e:
+            if attempt < 4:
+                time.sleep(3 * (attempt + 1))
+                continue
+            raise LLMError(f"OpenRouter unreachable: {type(e).__name__}")
+        if r.status_code == 429 and attempt < 4:
+            time.sleep(10 * (attempt + 1))
+            continue
+        if r.status_code >= 500 and attempt < 4:
+            time.sleep(5 * (attempt + 1))
+            continue
+        if r.status_code == 402:
+            raise LLMError("OpenRouter: out of credits on this key")
+        if not r.ok:
+            raise LLMError(f"OpenRouter {r.status_code}: {r.text[:200]}")
+        break
+    data = r.json()
+    if data.get("error"):
+        raise LLMError(f"OpenRouter error: {str(data['error'])[:200]}")
+    choice = (data.get("choices") or [{}])[0]
+    reason = str(choice.get("finish_reason") or "")
+    if reason == "content_filter":
+        raise LLMRefused("model declined (content filter)")
+    if reason == "length":
+        raise LLMRefused("hit the output limit before finishing the JSON")
+    text = ((choice.get("message") or {}).get("content") or "").strip()
+    if not text:
+        raise LLMError(f"OpenRouter returned no text (finish reason {reason or 'unknown'})")
+    text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    return json.loads(text)
+
+
 # ---------------- Claude ------------------------------------------------------
 _claude = None
 
@@ -116,6 +167,8 @@ def _call_claude(system: str, user: str, schema: Dict, effort: str, max_tokens: 
 def call_json(system: str, user: str, schema: Dict, effort: str = "medium", max_tokens: int = 16000) -> Dict:
     if config.LLM_PROVIDER == "claude":
         return _call_claude(system, user, schema, effort, max_tokens)
+    if config.LLM_PROVIDER == "openrouter":
+        return _call_openrouter(system, user, schema, effort, max_tokens)
     return _call_gemini(system, user, schema, effort, max_tokens)
 
 
