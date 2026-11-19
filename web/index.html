@@ -224,7 +224,10 @@
   @media (max-width: 720px) {
     .wrap { padding: 0 16px 72px; }
     .grid2 { grid-template-columns: 1fr; }
-    .stages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
+    .stages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; scrollbar-width: thin; scrollbar-color: var(--surface3) transparent; }
+    .stages::-webkit-scrollbar { height: 6px; }
+    .stages::-webkit-scrollbar-track { background: transparent; }
+    .stages::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 999px; }
     .stage { flex: 0 0 132px; scroll-snap-align: start; }
     .how { padding: 20px; }
     .card-head { padding: 18px; } .card-body, .loading { padding: 0 18px 18px; }
@@ -329,6 +332,12 @@ async function api(path, body) {
 /* stage strip: an estimate while the server works, then the real outcome */
 const steps = [...document.querySelectorAll(".stage")];
 let stepTimer = null;
+/* On narrow screens the strip scrolls sideways: keep the active stage in view without moving the page. */
+function showStage(el) {
+  const strip = $("#steps");
+  if (strip.scrollWidth <= strip.clientWidth) return;
+  strip.scrollTo({ left: el.offsetLeft - strip.offsetLeft - 8, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
 function animateSteps() {
   clearInterval(stepTimer);
   steps.forEach(s => s.className = "stage");
@@ -337,7 +346,7 @@ function animateSteps() {
   const set = () => { const el = $(".ticker-text"); if (el) el.textContent = msgs[Math.min(i, 5)] + "…"; };
   set();
   stepTimer = setInterval(() => {
-    if (i < 5) { steps[i].className = "stage done"; i++; steps[i].classList.add("active"); set(); }
+    if (i < 5) { steps[i].className = "stage done"; i++; steps[i].classList.add("active"); set(); showStage(steps[i]); }
   }, 7000);
 }
 function finishSteps(r) {

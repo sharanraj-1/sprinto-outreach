@@ -17,10 +17,13 @@ cp .env.example .env      # then fill it in
 ```
 
 `.env` needs:
-- `GEMINI_API_KEY`: free, from aistudio.google.com → Get API key (default model `gemini-flash-latest`).
+- `OPENROUTER_API_KEY` (used automatically when set; runs `google/gemini-3.8-flash`, change with `OPENROUTER_MODEL`),
+  or `GEMINI_API_KEY`: free, from aistudio.google.com → Get API key (default model `gemini-flash-latest`).
   To use Claude instead, set `LLM_PROVIDER=claude` and `ANTHROPIC_API_KEY`, then `pip install anthropic`.
 - `HUNTER_API_KEY`: hunter.io → API (free tier: 25 searches a month)
-- `GMAIL_ADDRESS` + `GMAIL_APP_PASSWORD`: Google Account → Security → 2-Step Verification → App passwords (16 characters)
+- `SEND_TO`: the one inbox every reviewed draft goes to.
+- `RESEND_API_KEY` (tried first; the sandbox sender only delivers to your Resend account's email),
+  or `GMAIL_ADDRESS` + `GMAIL_APP_PASSWORD`: Google Account → Security → 2-Step Verification → App passwords (16 characters)
 
 If you use Apollo instead of Hunter (Option B), put the contacts you looked up into
 `contacts.csv` (`domain,first_name,last_name,title,email,linkedin`). A CSV row always
@@ -91,7 +94,7 @@ nothing, but the per-minute limit means a 10-company run takes a few minutes (th
 
 ## Web app on Vercel
 
-Live at **https://sprinto-outreach-eta.vercel.app** (`app.py` + `web/index.html`).
+Live at **https://sprinto-outreach-three.vercel.app** (`app.py` + `web/index.html`). Open to anyone, no password.
 
 - Open the link, paste domains, click **Run pipeline**. Each domain is one request
   (about 30-60 seconds; Vercel allows up to 300).
