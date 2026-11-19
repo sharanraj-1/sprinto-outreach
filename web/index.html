@@ -102,21 +102,30 @@
   .how-field { background: var(--yellow); color: #1d1a2e; padding: 88px 0 96px; }
   h2 { font-size: clamp(34px, 4.4vw, 56px); line-height: 1; letter-spacing: -.03em; font-weight: 700; margin: 0 0 12px; }
   .how-field p.intro { font-size: 24px; max-width: 46ch; margin: 0 0 44px; }
-  .stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  .stage { --c: var(--pink); position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: 28px; align-items: baseline; padding: 10px 150px 12px 18px; }
-  .stage:nth-child(2) { --c: #00c27c; } .stage:nth-child(3) { --c: var(--orange); } .stage:nth-child(4) { --c: #8ea0ff; }
+  /* the seven stops: boxes in a row, one after another, joined by arrows */
+  .stages { --gap: 26px; list-style: none; margin: 0; padding: 14px 4px 10px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--gap); }
+  .stage { --c: #ff9fd0; position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 10px; min-height: 236px;
+    padding: 18px 14px 46px; background: var(--c); color: #1d1a2e; border: 3px solid #1d1a2e; outline: 2px dotted #1d1a2e; outline-offset: -9px;
+    transition: transform .45s var(--spring), color .3s ease; }
+  .stage:nth-child(2) { --c: #8fe3c0; } .stage:nth-child(3) { --c: #ffb38a; } .stage:nth-child(4) { --c: #b9c4ff; }
   .stage:nth-child(5) { --c: #ff9fd0; } .stage:nth-child(6) { --c: #8fe3c0; } .stage:nth-child(7) { --c: #ffb38a; }
-  /* colour sweeps across the stop that is running now */
-  .stage::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--c); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease); }
-  .stage.active::before { transform: scaleX(1); }
-  .stage.done::before { transform: scaleX(1); background: #fbfbff; }
-  .stage b { font-size: clamp(34px, 4.4vw, 56px); font-weight: 700; font-style: italic; line-height: 1; letter-spacing: -.025em; transition: transform .5s var(--spring); }
-  .stage.active b { transform: translateX(14px); }
-  .stage span { font-size: 19px; line-height: 1.4; }
-  .stage.done::after { content: "Done"; position: absolute; right: 18px; top: 18px; font-style: italic; font-weight: 700; font-size: 24px;
+  /* ink floods up through the box that is running now */
+  .stage::before { content: ""; position: absolute; inset: 0; z-index: -1; background: #1d1a2e; transform: scaleY(0); transform-origin: bottom; transition: transform .6s var(--ease); }
+  .stage.active { color: var(--yellow); outline-color: var(--yellow); transform: translateY(-12px); transition: transform .45s var(--spring), color .2s .4s ease, outline-color .2s .4s ease; }
+  .stage.active::before { transform: scaleY(1); }
+  .stage b { font-size: clamp(24px, 2.4vw, 34px); font-weight: 700; font-style: italic; line-height: 1.02; letter-spacing: -.025em; }
+  .stage span { font-size: 16px; line-height: 1.4; }
+  .stage .conn { position: absolute; top: 50%; right: calc(var(--gap) / -2 - 14px); width: 28px; height: 28px; margin-top: -14px; z-index: 2;
+    display: grid; place-items: center; font-size: 16px; color: #fbfbff; background: #1d1a2e; border-radius: 50%; }
+  .stage.done::after { content: "Done"; position: absolute; left: 12px; bottom: 12px; font-style: italic; font-weight: 700; font-size: 19px;
     color: #00744a; border: 4px double currentColor; padding: 0 10px; background: #fbfbff; transform: rotate(-9deg);
     animation: thunk .45s var(--spring) both; }
+  /* narrower screens: the row keeps going sideways and snaps box by box */
+  @media (max-width: 1100px) {
+    .stages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 4px; margin: 0 -28px; padding: 18px 28px 18px;
+      scrollbar-width: thin; scrollbar-color: #1d1a2e transparent; }
+    .stage { flex: 0 0 210px; scroll-snap-align: start; }
+  }
 
   /* ---------- results on paper ---------- */
   .results-field { padding: 96px 0 120px; }
@@ -253,8 +262,8 @@
     .wrap { padding: 0 18px; }
     nav { gap: 18px; } nav a.hide-sm { display: none; }
     .grid2 { grid-template-columns: 1fr; }
-    .stage { grid-template-columns: 1fr; gap: 2px; padding: 10px 110px 12px 14px; }
-    .stage.done::after { font-size: 19px; right: 10px; top: 12px; }
+    .stages { margin: 0 -18px; padding: 18px 18px 18px; }
+    .stage { flex-basis: 180px; min-height: 220px; }
     .how-field, .results-field { padding: 64px 0 72px; }
     .card-head { padding: 18px 18px 6px; } .card-body, .loading { padding: 6px 18px 20px; }
     .tally .v { font-size: 34px; } .tally div { padding: 10px 16px 12px; }
@@ -306,14 +315,14 @@
 <section class="how-field" id="how" aria-labelledby="how-h">
   <div class="wrap">
     <h2 id="how-h" class="reveal">Seven stops on the way to your inbox</h2>
-    <p class="intro reveal">Every run moves through these in order. Colour floods the stop it is on right now.</p>
+    <p class="intro reveal">Every run moves through these boxes in order. The one it is working on fills with ink.</p>
     <ol class="stages" id="steps">
-      <li class="stage reveal"><b>Scrape</b><span>HTML, scripts, sitemap and job board</span></li>
-      <li class="stage reveal"><b>Extract</b><span>Named facts, each with its page</span></li>
-      <li class="stage reveal"><b>Qualify</b><span>B2B SaaS, not certified, right stage</span></li>
-      <li class="stage reveal"><b>Find contact</b><span>Security lead, then CTO, then founder</span></li>
-      <li class="stage reveal"><b>Pain points</b><span>Two, each tied to a fact from the site</span></li>
-      <li class="stage reveal"><b>Draft</b><span>Checked in code, redrafted once</span></li>
+      <li class="stage reveal"><b>Scrape</b><span>HTML, scripts, sitemap and job board</span><i class="ph-bold ph-arrow-right conn" aria-hidden="true"></i></li>
+      <li class="stage reveal"><b>Extract</b><span>Named facts, each with its page</span><i class="ph-bold ph-arrow-right conn" aria-hidden="true"></i></li>
+      <li class="stage reveal"><b>Qualify</b><span>B2B SaaS, not certified, right stage</span><i class="ph-bold ph-arrow-right conn" aria-hidden="true"></i></li>
+      <li class="stage reveal"><b>Find contact</b><span>Security lead, then CTO, then founder</span><i class="ph-bold ph-arrow-right conn" aria-hidden="true"></i></li>
+      <li class="stage reveal"><b>Pain points</b><span>Two, each tied to a fact from the site</span><i class="ph-bold ph-arrow-right conn" aria-hidden="true"></i></li>
+      <li class="stage reveal"><b>Draft</b><span>Checked in code, redrafted once</span><i class="ph-bold ph-arrow-right conn" aria-hidden="true"></i></li>
       <li class="stage reveal"><b>Send</b><span>To your inbox, after you read it</span></li>
     </ol>
   </div>
@@ -385,15 +394,21 @@ async function api(path, body) {
 /* the stamp strip: an estimate while the server works, then the real outcome */
 const steps = [...document.querySelectorAll(".stage")];
 let stepTimer = null;
+/* when the row scrolls sideways, keep the running box in view without moving the page */
+function showStage(el) {
+  const strip = $("#steps");
+  if (!el || strip.scrollWidth <= strip.clientWidth) return;
+  strip.scrollTo({ left: el.offsetLeft - strip.offsetLeft - 18, behavior: reduce ? "auto" : "smooth" });
+}
 function animateSteps() {
   clearInterval(stepTimer);
   steps.forEach(s => s.classList.remove("active", "done"));
-  let i = 0; steps[0].classList.add("active");
+  let i = 0; steps[0].classList.add("active"); showStage(steps[0]);
   const msgs = ["Reading the website", "Checking it is B2B SaaS", "Verifying against every source", "Finding the decision-maker", "Working out pain points", "Drafting the email"];
   const set = () => { const el = $(".ticker-text"); if (el) el.textContent = msgs[Math.min(i, 5)] + "…"; };
   set();
   stepTimer = setInterval(() => {
-    if (i < 5) { steps[i].classList.replace("active", "done"); i++; steps[i].classList.add("active"); set(); }
+    if (i < 5) { steps[i].classList.replace("active", "done"); i++; steps[i].classList.add("active"); set(); showStage(steps[i]); }
   }, 7000);
 }
 function finishSteps(r) {
