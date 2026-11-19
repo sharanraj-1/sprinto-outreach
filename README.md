@@ -132,3 +132,8 @@ security pages the deep scan discovered, then checks every item against all sour
 3. Series A-C sized
 4. Compliance trigger (why now)
 5. Enough data collected. If it fails, the company goes to manual review as "needs browser scraping".
+
+## Components map
+
+`docs/components-map.png` (and `.html`) shows every component as a swimlane: who or what acts at each stage, from a pasted domain to a reviewed email.
+Rebuild it after a change with `node scripts/build-components-map.mjs`, then render the PNG with headless Chrome or Edge.
