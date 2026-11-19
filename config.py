@@ -106,6 +106,8 @@ POC_TITLE_PRIORITY = [
     ("coo_ops", ["coo", "chief operating", "head of operations"]),
 ]
 MIN_HUNTER_CONFIDENCE = 50
+# Free, keyless contact finding from the company's own pages when the CSV and Hunter give nobody (sitecontacts.py).
+FREE_CONTACT_FINDER = os.getenv("FREE_CONTACT_FINDER", "1") != "0"
 CONTACTS_CSV = os.getenv("CONTACTS_CSV", os.path.join(HERE, "contacts.csv"))   # Apollo fallback (Option B)
 
 # --- What Sprinto actually does (only claims we can stand behind) ---------------

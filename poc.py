@@ -3,6 +3,8 @@
 Source order (L4: "data provider before scraping"):
   1. contacts.csv  - Option B, contacts you looked up by hand in Apollo (always wins: a human chose them)
   2. Hunter.io     - Option A, Domain Search API (free tier: 25 searches/month, 10 emails each)
+  3. Site contacts - free and keyless (sitecontacts.py): named people from the company's own pages,
+                     emails published there, else the email format learned or guessed, flagged as such
 The ranking is CODE, not the model, so "why this person" has a one-line, checkable answer:
 the most senior person who owns security/compliance; if the company has none, the CTO;
 if neither, a founder/CEO. Low-confidence Hunter emails are dropped.
@@ -21,6 +23,7 @@ from typing import Dict, List, Optional
 import requests
 
 import config
+import sitecontacts
 
 
 def _from_csv(domain: str) -> List[Dict]:
@@ -89,6 +92,15 @@ def _hunter_search(domain: str, log: List[str]) -> List[Dict]:
     return []
 
 
+SOURCE_LABEL = {
+    "apollo_manual_csv": "contacts.csv (hand-picked)",
+    "hunter": "Hunter",
+    "site_published": "their own website (name and email both published)",
+    "site_pattern": "their own website (name published, email format learned)",
+    "site_pattern_guess": "their own website (name published, email guessed)",
+}
+
+
 def _role_bucket(title: str) -> Optional[int]:
     t = title.lower()
     for i, (_, keys) in enumerate(config.POC_TITLE_PRIORITY):
@@ -98,13 +110,7 @@ def _role_bucket(title: str) -> Optional[int]:
     return None
 
 
-def find_poc(domain: str, log: List[str]) -> Dict:
-    people = _from_csv(domain)
-    if people:
-        log.append(f"contacts.csv: {len(people)} hand-picked contact(s) for {domain}")
-    else:
-        people = _from_hunter(domain, log)
-
+def _rank(people: List[Dict], log: List[str]) -> List:
     ranked = []
     for p in people:
         if not p["first_name"] or not p["email"]:
@@ -117,6 +123,22 @@ def find_poc(domain: str, log: List[str]) -> Dict:
             continue
         senior = 0 if any(w in p["position"].lower() for w in ("chief", "head", "vp", "founder", "director")) else 1
         ranked.append((bucket, senior, -p["confidence"], p))
+    return ranked
+
+
+def find_poc(domain: str, log: List[str]) -> Dict:
+    people = _from_csv(domain)
+    if people:
+        log.append(f"contacts.csv: {len(people)} hand-picked contact(s) for {domain}")
+    else:
+        people = _from_hunter(domain, log)
+    ranked = _rank(people, log)
+
+    if not ranked and config.FREE_CONTACT_FINDER:
+        try:
+            ranked = _rank(sitecontacts.find(domain, log), log)
+        except Exception as e:  # the free finder must never break the run
+            log.append(f"site contacts: failed ({type(e).__name__}: {str(e)[:120]})")
 
     if not ranked:
         return {"found": False, "why": "No contact with a security, engineering-leadership or founder title "
@@ -133,6 +155,7 @@ def find_poc(domain: str, log: List[str]) -> Dict:
     }
     best.update(found=True, role_bucket=role_name,
                 why=f"{best['first_name']} {best['last_name']} ({best['position']}): {reasons[role_name]}. "
-                    f"Source: {best['source']}, email confidence {best['confidence']}.",
+                    f"Source: {SOURCE_LABEL.get(best['source'], best['source'])}, email confidence {best['confidence']}."
+                    + (f" Email: {best['email_basis']}." if best.get("email_basis") else ""),
                 alternatives=[f"{p['first_name']} {p['last_name']} - {p['position']}" for *_, p in ranked[1:4]])
     return best

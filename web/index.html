@@ -502,7 +502,7 @@ function render(card, r) {
     h += `<div class="mail">
       <div class="mail-head"><h4>The draft</h4><span>Change anything before you send it</span></div>
       <div class="mail-meta">
-        <div class="mail-row"><span>For</span><b>${esc(p.first_name)} ${esc(p.last_name)} &lt;${esc(p.email)}&gt;</b></div>
+        <div class="mail-row"><span>For</span><b>${esc(p.first_name)} ${esc(p.last_name)} &lt;${esc(p.email)}&gt;${(p.source || "").startsWith("site_pattern") ? ` <span class="flag">${icon("warning")} Guessed address, check it before sending</span>` : ""}</b></div>
         <div class="mail-row"><label for="subj-${esc(r.domain)}">Subject</label><input class="subj" id="subj-${esc(r.domain)}" value="${esc(e.subject)}"></div>
       </div>
       <textarea class="body" aria-label="Email body">${esc(e.body)}</textarea>
